@@ -1,0 +1,28 @@
+import logging
+from telegram import Update
+from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
+
+# စက်ထဲမှာ error တက်ရင် ကြည့်လို့ရအောင် setup လုပ်တာပါ
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
+
+# ၁။ /start လို့ ရိုက်လိုက်ရင် ပြန်မယ့်စာ
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("မင်္ဂလာပါ! ကျွန်တော်က Python Bot ပါ။ တစ်ခုခု ရိုက်ပို့ကြည့်ပါ။")
+
+# ၂။ လူက ပို့လိုက်တဲ့စာကို ပြန်ပြောမယ့် (Echo) အပိုင်း
+async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(f"သင်ပြောလိုက်တာက: {update.message.text}")
+
+if __name__ == '__main__':
+    # Token ထည့်ရမယ့်နေရာ
+    application = ApplicationBuilder().token('YOUR_TOKEN_HERE').build()
+    
+    # Command တွေနဲ့ စာတွေကို လက်ခံဖို့ ချိတ်ဆက်တာ
+    application.add_handler(CommandHandler('start', start))
+    application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), echo))
+    
+    print("Bot စတင် အလုပ်လုပ်နေပါပြီ...")
+    application.run_polling()
